@@ -5,7 +5,9 @@ import pandas as pd
 import itertools
 import math
 from scipy.special import logsumexp
+import logging
 
+logger = logging.getLogger(__name__)
 
 # This function calculates the probability of transition from multiple
 # nodes to given node in the tree
@@ -48,7 +50,7 @@ def noisy_or(hmm, previous_state, current_state):
 
 # Defining the forward function
 
-def forward(hmm, adjacent_matrix, emission_observation, forward_tree_sequence, observed_states_training_nodes=None, verbose = False):
+def forward(hmm, adjacent_matrix, emission_observation, forward_tree_sequence, observed_states_training_nodes=None):
     """
     Args:
         hmm: It is a dictionary given as output by initHMM.py file
@@ -71,8 +73,8 @@ def forward(hmm, adjacent_matrix, emission_observation, forward_tree_sequence, o
 
     hmm["state_transition_probabilities"].fillna(0, inplace=True)
     number_of_levels = len(emission_observation)
-    if verbose:
-        print("Forward loop running")
+
+    logger.debug("Forward loop running")
 
     for m in range(number_of_levels):
         hmm["emission_probabilities"][m].fillna(0, inplace=True)
@@ -161,8 +163,7 @@ def forward(hmm, adjacent_matrix, emission_observation, forward_tree_sequence, o
                 if emission_observation[m][k] is not None:
                     try:
                         emit = math.log(hmm["emission_probabilities"][m].loc[state, emission_observation[m][k]]) + emit
-                        if verbose:
-                            print("Fwd Emit is working for node :", k)
+                        logger.debug("Fwd Emit is working for node : {}".format(k))
                     except ValueError:
                         emit = -math.inf
                         break
@@ -218,7 +219,7 @@ def run_an_example_2():
     data = {'node': [1], 'state': ['P']}
     observed_states_training_nodes = pd.DataFrame(data=data, columns=["node", "state"])
 
-    forward_probs = forward(hmm, sparse_sample_tree, emission_observation,forward_tree_sequence,observed_states_training_nodes, True)
+    forward_probs = forward(hmm, sparse_sample_tree, emission_observation,forward_tree_sequence,observed_states_training_nodes)
     print(forward_probs)
 
 if __name__ == "__main__":

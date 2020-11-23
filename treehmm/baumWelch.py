@@ -14,6 +14,9 @@ from treehmm.forward import forward
 from treehmm.backward import backward
 import copy
 from scipy.special import logsumexp
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Implementation of the Baum Welch Algorithm as a special case of Expectation Maximization algorithm
 # The function hmm_train_and_test recursively calls this function to give a final estimate of parameters for tree HMM
@@ -21,7 +24,7 @@ from scipy.special import logsumexp
 # Defining the baumWelchRecursion function
 # eps = 1e-7
 
-def baumWelchRecursion(hmm, adjacent_matrix, emission_observation, observed_states_training_nodes=None, observed_states_validation_nodes=None, verbose = False):
+def baumWelchRecursion(hmm, adjacent_matrix, emission_observation, observed_states_training_nodes=None, observed_states_validation_nodes=None):
     """
     Args:
         hmm: It is a dictionary given as output by initHMM.py file
@@ -57,8 +60,8 @@ def baumWelchRecursion(hmm, adjacent_matrix, emission_observation, observed_stat
         observed_states_validation_nodes.iloc[:, 1] = observed_states_validation_nodes.iloc[:, 1].astype('int32')
 
     # 'fwd' and 'bwd' are the forward and backward probabilities calculated with given custom arguments
-    fwd = forward(hmm, adjacent_matrix, emission_observation, tree_sequence[0], observed_states_training_nodes, verbose)
-    bwd = backward(hmm, adjacent_matrix, emission_observation, tree_sequence[1], observed_states_training_nodes, verbose)
+    fwd = forward(hmm, adjacent_matrix, emission_observation, tree_sequence[0], observed_states_training_nodes)
+    bwd = backward(hmm, adjacent_matrix, emission_observation, tree_sequence[1], observed_states_training_nodes)
 
     f = fwd
     b = bwd
@@ -223,14 +226,12 @@ def hmm_train_and_test(
     aupr_iter = []
 
     for i in range(maxIterations):
-        if verbose:
-            print("Iteration: ", i)
-        #print("\n")
+        logger.info("Iteration: {}".format(i))
         start_time_it = datetime.now()
 
         bw = baumWelchRecursion(temporary_hmm, adjacent_matrix, emission_observation, observed_states_training_nodes, observed_states_validation_nodes)
         if len(bw["results"]) == 3:
-            print("AUC:" , bw["results"][0])
+            logger.info("AUC: {}".format(bw["results"][0]))
 
         TM = bw["Transition_Matrix"].copy()
         EM = copy.deepcopy(bw["Emission_Matrix"])
@@ -253,7 +254,7 @@ def hmm_train_and_test(
             summ = summ + di
 
         d = np.sqrt(np.sum(np.square(np.array(temporary_hmm["state_transition_probabilities"] - TM)))) + summ
-        print("Delta:", d)
+        logger.info("Delta: {}".format(d))
 
         diff.append(d)
 
@@ -264,7 +265,7 @@ def hmm_train_and_test(
 
      
         iter_time = (datetime.now() - start_time_it).total_seconds()
-        print("time cost = {:2f} seconds".format(iter_time))
+        logger.info("time cost = {:2f} seconds".format(iter_time))
 
         iter_t.append(iter_time)
 
@@ -275,7 +276,7 @@ def hmm_train_and_test(
             aupr_iter.append(bw["results"][1])
 
         if np.all(d < delta):
-            print("Convergence has reached")
+            logger.info("Convergence has reached")
             break
 
     temporary_hmm["state_transition_probabilities"].fillna(0, inplace=True)

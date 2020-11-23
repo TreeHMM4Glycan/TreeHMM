@@ -6,6 +6,7 @@ import treehmm.initHMM as initHMM
 import treehmm.baumWelch as baumWelch
 import copy
 from scipy.sparse.csr import csr_matrix
+import logging
 
 # Sample test variable declaration
 
@@ -53,4 +54,6 @@ def example1():
     #print("\n")
 
 if __name__ == "__main__":
+    logging.getLogger().addHandler(logging.StreamHandler())
+    logging.getLogger().setLevel(logging.DEBUG)
     example1()

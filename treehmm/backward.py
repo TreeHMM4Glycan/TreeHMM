@@ -13,10 +13,12 @@ import numpy as np
 import pandas as pd
 import math
 import itertools
+import logging
 
+logger = logging.getLogger(__name__)
 # Defining the backward function
 
-def backward(hmm, adjacent_matrix, emission_observation, backward_tree_sequence, observed_states_training_nodes=None, verbose = False):
+def backward(hmm, adjacent_matrix, emission_observation, backward_tree_sequence, observed_states_training_nodes=None):
     """
     Args:
         hmm: It is a dictionary given as output by initHMM.py file
@@ -61,8 +63,8 @@ def backward(hmm, adjacent_matrix, emission_observation, backward_tree_sequence,
         data=backward_probabilities,
         index=hmm["states"],
         columns=range(number_of_observations))
-    if verbose:
-        print("Backward loop running")
+    
+    logger.debug("Backward loop running")
 
     # main for loop to calulate the backward_probabilities
     for k in backward_tree_sequence:
@@ -167,7 +169,7 @@ def run_an_example():
     backward_tree_sequence = backward_sequence_generator(sparse_sample_tree)
     data = {'node': [1], 'state': ['P']}
     observed_states_training_nodes = pd.DataFrame(data=data, columns=["node", "state"])
-    backward_probs = backward(hmm, sparse_sample_tree, emission_observation, backward_tree_sequence, observed_states_training_nodes, True)
+    backward_probs = backward(hmm, sparse_sample_tree, emission_observation, backward_tree_sequence, observed_states_training_nodes)
     print(backward_probs)
 
 # sample call to the function
