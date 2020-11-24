@@ -264,7 +264,7 @@ def hmm_train_and_test(
 
      
         iter_time = (datetime.now() - start_time_it).total_seconds()
-        logger.info("Delta:{:6f} Time cost = {:2f} seconds".format(d,iter_time))
+        logger.info("Delta:{:6f} Time: {:2f} seconds".format(d,iter_time))
 
         iter_t.append(iter_time)
 
