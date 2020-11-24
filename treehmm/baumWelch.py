@@ -175,8 +175,7 @@ def hmm_train_and_test(
         observed_states_validation_nodes=None,
         maxIterations=50,
         delta=1e-5,
-        pseudoCount=0,
-        verbose = True):
+        pseudoCount=0):
     """inferred HMM whose representation is equivalent to the representation in
     initHMM.py, second being a list of statistics of algorithm and third being
     the final state probability distribution at all nodes.
@@ -323,6 +322,8 @@ def run_an_example_2():
     data1 = {'node' : [2,3,4], 'state' : ['P','N','P']}
     observed_states_validation_nodes = pd.DataFrame(data = data1,columns=["node","state"])
     emission_observation = [["L", "L", "R", "R", "L"]]
+    logging.getLogger().addHandler(logging.StreamHandler())
+    logging.getLogger().setLevel(logging.DEBUG)
     learntHMM = hmm_train_and_test(copy.deepcopy(hmm),sparse_sample_tree, emission_observation,observed_states_training_nodes, observed_states_validation_nodes)
     print(learntHMM)
 
