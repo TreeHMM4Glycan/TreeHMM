@@ -254,8 +254,7 @@ def hmm_train_and_test(
             summ = summ + di
 
         d = np.sqrt(np.sum(np.square(np.array(temporary_hmm["state_transition_probabilities"] - TM)))) + summ
-        logger.info("Delta: {}".format(d))
-
+  
         diff.append(d)
 
         temporary_hmm["state_transition_probabilities"] = TM
@@ -265,7 +264,7 @@ def hmm_train_and_test(
 
      
         iter_time = (datetime.now() - start_time_it).total_seconds()
-        logger.info("time cost = {:2f} seconds".format(iter_time))
+        logger.info("Delta:{:6f} Time cost = {:2f} seconds".format(d,iter_time))
 
         iter_t.append(iter_time)
 
